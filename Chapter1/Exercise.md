@@ -76,4 +76,27 @@
    }
    ```
 
-   
+### 计算一个byte数字对应的二进制数字中1的最大连续数
+
+```c++
+int num;
+int k;
+while(cin >> num){
+   for(k = 0; num != 0; k++){
+       num = num &(num<<1);
+   }
+   std::cout<<k<<std::endl;
+}
+```
+
+### 求两个整数之和
+
+```c++
+while(num2 != 0){
+    int a = ((unsigned int)(num1 & num2)) << 1;
+    num1 ^= num2;
+    num2 = a;
+}
+return num1;
+```
+
