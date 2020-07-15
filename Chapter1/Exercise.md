@@ -14,7 +14,10 @@
 <!-- /TOC -->
 
 # Chapter1：Exercise
+增删查改
+
 ## 位运算
+
 ### 计算整数二进制中1的个数（以int类型为例，32个bit）
 #### 方法1：移动
 
@@ -313,5 +316,39 @@ TreeNode* build(1...) {
 
 ## 图遍历
 
-1. 深度优先遍历（DFS）
+1. 深度优先遍历（DFS）回溯
+
+   数字的全排列
+
+   ```c++
+   class Solution{
+       private:
+       void dfs(vector<int>& nums, int len, int depth, vector<int>& path, vector<int>& used, vector<vector<int>>& res){
+           if(depth == len){
+               res.emplace_back(path);
+               return;
+           }
+           for(int i = 0; i < len; i++){
+               if(used[i]){
+                   continue;
+               }
+               path.push_back(nums[i]);
+               used[i] = 1;
+               dfs(nums, len, depth+1, path, used, res);
+               path.pop_back();
+               used[i] = 0;
+           }
+       }
+       public:
+       vector<vector<int>> permute(vector<int>& nums){
+           vector<vector<int>> res;
+           int len = nums.size();
+           vector<int> path;
+           vector<int> used(len, 0);
+           dfs(nums, len, 0, path, used, res);
+           return res;
+       }
+   };
+   ```
+
 2. 广度优先遍历（BFS）
