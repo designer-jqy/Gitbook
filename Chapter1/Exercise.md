@@ -352,3 +352,40 @@ TreeNode* build(1...) {
    ```
 
 2. 广度优先遍历（BFS）
+
+   111.二叉数的最小深度
+
+   ```c++
+   class Solution{
+   public:
+       int minDepth(TreeNode* root){
+           if(root == NULL){
+               return 0;
+           }
+           queue<TreeNode*> q;
+           q.push(root);
+           int depth = 1;
+           TreeNode* cur;
+           while(!q.empty()){
+               int n = q.size();
+               for(int i = 0; i < n; i++){
+                   cur = q.front();
+                   q.pop();
+                   if(cur->left == NULL && cur->right == NULL){
+                       return depth;
+                   }
+                   if(cur->left){
+                       p.push(cur->left);
+                   }
+                   if(cur->right){
+                       p.push(cur->right);
+                   }
+               }
+               depth++:
+           }
+           return depth;
+       }
+   };
+   ```
+
+   
