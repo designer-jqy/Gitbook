@@ -316,76 +316,75 @@ TreeNode* build(1...) {
 
 ## 图遍历
 
-1. 深度优先遍历（DFS）回溯
+### 深度优先遍历（DFS）回溯
 
-   数字的全排列
+数字的全排列
 
-   ```c++
-   class Solution{
-       private:
-       void dfs(vector<int>& nums, int len, int depth, vector<int>& path, vector<int>& used, vector<vector<int>>& res){
-           if(depth == len){
-               res.emplace_back(path);
-               return;
-           }
-           for(int i = 0; i < len; i++){
-               if(used[i]){
-                   continue;
-               }
-               path.push_back(nums[i]);
-               used[i] = 1;
-               dfs(nums, len, depth+1, path, used, res);
-               path.pop_back();
-               used[i] = 0;
-           }
-       }
-       public:
-       vector<vector<int>> permute(vector<int>& nums){
-           vector<vector<int>> res;
-           int len = nums.size();
-           vector<int> path;
-           vector<int> used(len, 0);
-           dfs(nums, len, 0, path, used, res);
-           return res;
-       }
-   };
-   ```
+```c++
+class Solution{
+    private:
+    void dfs(vector<int>& nums, int len, int depth, vector<int>& path, vector<int>& used, vector<vector<int>>& res){
+        if(depth == len){
+            res.emplace_back(path);
+            return;
+        }
+        for(int i = 0; i < len; i++){
+            if(used[i]){
+                continue;
+            }
+            path.push_back(nums[i]);
+            used[i] = 1;
+            dfs(nums, len, depth+1, path, used, res);
+            path.pop_back();
+            used[i] = 0;
+        }
+    }
+    public:
+    vector<vector<int>> permute(vector<int>& nums){
+        vector<vector<int>> res;
+        int len = nums.size();
+        vector<int> path;
+        vector<int> used(len, 0);
+        dfs(nums, len, 0, path, used, res);
+        return res;
+    }
+};
+```
 
-2. 广度优先遍历（BFS）
+### 广度优先遍历（BFS）
 
-   111.二叉数的最小深度
+111.二叉数的最小深度
 
-   ```c++
-   class Solution{
-   public:
-       int minDepth(TreeNode* root){
-           if(root == NULL){
-               return 0;
-           }
-           queue<TreeNode*> q;
-           q.push(root);
-           int depth = 1;
-           TreeNode* cur;
-           while(!q.empty()){
-               int n = q.size();
-               for(int i = 0; i < n; i++){
-                   cur = q.front();
-                   q.pop();
-                   if(cur->left == NULL && cur->right == NULL){
-                       return depth;
-                   }
-                   if(cur->left){
-                       p.push(cur->left);
-                   }
-                   if(cur->right){
-                       p.push(cur->right);
-                   }
-               }
-               depth++:
-           }
-           return depth;
-       }
-   };
-   ```
+```c++
+class Solution{
+public:
+    int minDepth(TreeNode* root){
+        if(root == NULL){
+            return 0;
+        }
+        queue<TreeNode*> q;
+        q.push(root);
+        int depth = 1;
+        TreeNode* cur;
+        while(!q.empty()){
+            int n = q.size();
+            for(int i = 0; i < n; i++){
+                cur = q.front();
+                q.pop();
+                if(cur->left == NULL && cur->right == NULL){
+                    return depth;
+                }
+                if(cur->left){
+                    p.push(cur->left);
+                }
+                if(cur->right){
+                    p.push(cur->right);
+                }
+            }
+            depth++:
+        }
+        return depth;
+    }
+};
+```
 
-   
