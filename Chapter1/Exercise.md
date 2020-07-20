@@ -16,6 +16,10 @@
 # Chapter1：Exercise
 增删查改
 
+分析递归问题，最好都画出递归树
+
+
+
 ## 位运算
 
 ### 计算整数二进制中1的个数（以int类型为例，32个bit）
@@ -205,6 +209,8 @@ $$
 5. 字符串的排列（剑指offer）
 6. 猜数字大小（Leetcode）
 
+
+
 ## 树
 
 ### 数的构造
@@ -386,5 +392,89 @@ public:
         return depth;
     }
 };
+```
+
+## 二分查找
+
+```c++
+int binarySeaech(vector<int>& nums, int target){
+    int left = 0, right = ...;
+    while(...){
+        int mid = left + (right - left)/2;
+        //同样可以使用
+        //int mid = (left + right)/2;
+        //这种方式可能会溢出
+        if(nums[mid] == target){
+            ...
+        }else if(nums[mid] < target){
+            left = ...
+        }
+        else if(nums[mid] > target){
+            right = ...
+        }
+    }
+    
+    return ...;
+}
+```
+
+将「搜索区间」全都统一成了两端都闭
+
+```c++
+int binary_search(int[] nums, int target) {
+    int left = 0, right = nums.length - 1; 
+    while(left <= right) {
+        int mid = left + (right - left) / 2;
+        if (nums[mid] < target) {
+            left = mid + 1;
+        } else if (nums[mid] > target) {
+            right = mid - 1; 
+        } else if(nums[mid] == target) {
+            // 直接返回
+            return mid;
+        }
+    }
+    // 直接返回
+    return -1;
+}
+
+int left_bound(int[] nums, int target) {
+    int left = 0, right = nums.length - 1;
+    while (left <= right) {
+        int mid = left + (right - left) / 2;
+        if (nums[mid] < target) {
+            left = mid + 1;
+        } else if (nums[mid] > target) {
+            right = mid - 1;
+        } else if (nums[mid] == target) {
+            // 别返回，锁定左侧边界
+            right = mid - 1;
+        }
+    }
+    // 最后要检查 left 越界的情况
+    if (left >= nums.length || nums[left] != target)
+        return -1;
+    return left;
+}
+
+
+int right_bound(int[] nums, int target) {
+    int left = 0, right = nums.length - 1;
+    while (left <= right) {
+        int mid = left + (right - left) / 2;
+        if (nums[mid] < target) {
+            left = mid + 1;
+        } else if (nums[mid] > target) {
+            right = mid - 1;
+        } else if (nums[mid] == target) {
+            // 别返回，锁定右侧边界
+            left = mid + 1;
+        }
+    }
+    // 最后要检查 right 越界的情况
+    if (right < 0 || nums[right] != target)
+        return -1;
+    return right;
+}
 ```
 
