@@ -338,6 +338,19 @@ TreeNode* build(1...) {
 
 ### 深度优先遍历（DFS）回溯
 
+```c++
+result = []
+def backtrack(路径, 选择列表):
+    if 满足结束条件:
+        result.add(路径)
+        return
+
+    for 选择 in 选择列表:
+        做选择
+        backtrack(路径, 选择列表)
+        撤销选择
+```
+
 数字的全排列
 
 ```c++
@@ -370,6 +383,8 @@ class Solution{
     }
 };
 ```
+
+N皇后问题
 
 ### 广度优先遍历（BFS）
 
@@ -490,5 +505,137 @@ int right_bound(int[] nums, int target) {
         return -1;
     return right;
 }
+```
+
+## 滑动窗口技巧
+
+76.最小覆盖子串
+
+```c++
+//伪代码
+string s, t;
+int left =0, right = 0;
+string res = s;
+while(right<s.size()){
+    window.add(s[righrt]);
+    right++;
+    //如果符合条件，移动窗口的left
+    while(window窗口满足要求){
+        res = minlen(res,window);
+        window.remove(s[left]);
+        left++;
+    }
+}
+return res;
+```
+
+```c++
+//实现代码
+class Solution{
+  public:
+    string minWindow(string s, string t){
+        int start = 0, match = 0, len = INT_MAX;
+        int left = 0, right = 0;
+        unordered_map<char, int>need;
+        unordered_map<char, int>window;
+        for(char s1:t) need[s1]++;
+        while(right < s.size()){
+            char s1 = s[right];
+            if(need.count(s1){
+                window[s1]++;
+                if(need[s1] == window[s1]){
+                    match++;
+                }
+            }
+            right++;
+            while(match == need.size()){
+                char s2 = s[left];
+                if(right - left < len){
+                    start = left;
+                    len = right -left;
+                }
+                if(need.count(s2)){
+                    window[s2]--;
+                    if(window[s2] < need[s2]){
+                        match--;
+                    }
+                }
+                left++;
+            }
+        }
+        return len == INT_MAX ? "" : s.substr(start,len);  
+    }
+};
+```
+
+
+
+438.找到字符串中所有字母异位词
+
+3.无重复字符的最长字串
+
+567.字符串的排列
+
+## 股票买卖
+
+```c++
+dp[i][k][0 or 1]
+0 <= i <= n-1, 1 <= k <= K
+//n 为天数，大 K 为最多交易数，此问题共 n × K × 2 种状态，全部穷举就能搞定。
+for 0 <= i < n:
+    for 1 <= k <= K:
+        for s in {0, 1}:
+            dp[i][k][s] = max(buy, sell, rest)
+```
+
+#### [121. 买卖股票的最佳时机](https://leetcode-cn.com/problems/best-time-to-buy-and-sell-stock/)
+
+**确定状态转移方程**
+
+```c++
+//dp[i][k][0 or 1]
+//0 <= i <= n-1, 1 <= k <= K
+//n 为天数，大 K 为最多交易数
+//此问题共 n × K × 2 种状态，全部穷举就能搞定。
+for 0 <= i < n:
+    for 1 <= k <= K:
+        for s in {0, 1}:
+            dp[i][k][s] = max(buy, sell, rest)
+
+dp[i][k][0] = max(dp[i-1][k][0], dp[i-1][k][1] + prices[i])
+              max(   选择 rest  ,             选择 sell    )
+/*解释：今天我没有持有股票，有两种可能：
+要么是我昨天就没有持有，然后今天选择 rest，所以我今天还是没有持有；
+要么是我昨天持有股票，但是今天我 sell 了，所以我今天没有持有股票了。*/
+
+dp[i][k][1] = max(dp[i-1][k][1], dp[i-1][k-1][0] - prices[i])
+              max(   选择 rest  ,           选择 buy         )
+/*解释：今天我持有着股票，有两种可能：
+要么我昨天就持有着股票，然后今天选择 rest，所以我今天还持有着股票；
+要么我昨天本没有持有，但今天我选择 buy，所以今天我就持有股票了*/
+```
+
+**base case**
+
+```c++
+dp[-1][k][0] = 0;
+//因为 i 是从 0 开始的，所以 i = -1 意味着还没有开始，这时候的利润当然是0
+dp[-1][k][1] = -INT_MAX;
+//还没开始的时候，是不可能持有股票的，用负无穷表示这种不可能。
+dp[-1][0][0] = 0;
+//因为 k 是从 1 开始的，所以 k = 0 意味着根本不允许交易，这时候利润当然是 0 
+dp[-1][0][1] = -INT_MAX;
+//不允许交易的情况下，是不可能持有股票的，用负无穷表示这种不可能
+```
+
+**综上**
+
+```c++
+//base case
+dp[-1][k][0] = dp[-1][0][0] = 0;
+dp[-1][k][1] = dp[-1][0][1] = -INT_MAX;
+//状态转移方程
+dp[i][k][0] = max(dp[i-1][k][0], dp[i-1][k][1]+prices[i]);
+dp[i][k][1] = max(dp[i-1][k][1], dp[i-1][k-1][0]-prices[i]);
 ```
 
