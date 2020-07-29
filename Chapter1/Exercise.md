@@ -18,8 +18,6 @@
 
 分析递归问题，最好都画出递归树
 
-
-
 ## 位运算
 
 ### 计算整数二进制中1的个数（以int类型为例，32个bit）
@@ -151,7 +149,7 @@ for 状态1 in 状态1的所有取值：
             dp[状态1][状态2][...] = 求最值(选择1，选择2...)
 ```
 
-### 题目：
+### 题目
 
 1. 青蛙跳台阶
 
@@ -172,6 +170,13 @@ for 状态1 in 状态1的所有取值：
        }
    };
    ```
+   
+   $$
+   f(n) = f(n-1)+f(n-2)
+   $$
+   
+   
+   
 2. 变态跳台阶
 
    ```c++
@@ -187,6 +192,14 @@ for 状态1 in 状态1的所有取值：
    }
    ```
 
+   $$
+   f(n) = f(n-1)*f(n-2)*...*f(1)
+   化简得到：
+   f(n) = 2^{n-1}*f(1)
+   $$
+
+   
+
 3. 一个机器人位于一个 m x n 网格的左上角 （起始点在下图中标记为“Start” ）。机器人每次只能**向下**或者**向右**移动一步。机器人试图达到网格的右下角（在下图中标记为“Finish”）。问总共有多少条不同的路径？
 
 ![](Photo/reboot_walk.jpg)
@@ -197,6 +210,7 @@ $$
 4. 剪绳子
 
    ```c++
+   /*给你一根长度为 n 的绳子，请把绳子剪成整数长度的 m 段（m、n都是整数，n>1并且m>1），每段绳子的长度记为 k[0],k[1]...k[m-1] 。请问 k[0]*k[1]*...*k[m-1] 可能的最大乘积是多少？*/
    class Solution{
        public:
        int cutRope(int number){
@@ -220,14 +234,126 @@ $$
    }
    ```
 
-5. 字符串的排列（剑指offer）
-6. 猜数字大小（Leetcode）
+5. #### [375. 猜数字大小 II](https://leetcode-cn.com/problems/guess-number-higher-or-lower-ii/)
 
+### 打家劫舍问题
 
+[198. 打家劫舍](https://leetcode-cn.com/problems/house-robber/)
 
-## 树
+```c++
+/*给定一个代表每个房屋存放金额的非负整数数组，计算你 不触动警报装置的情况下 ，一夜之内能够偷窃到的最高金额。*/
+//如果两间相邻的房屋在同一晚上被小偷闯入，系统会自动报警
+/*递归，自顶向下*/
+class Solution{
+private:
+    int dp(vector<int>& nums,int start, vector<int>& mem){
+        if(start == nums.size()){
+            return 0;
+        }
+        if(mem[start] != -1) return mem[start];
+        int temp = max(dp(nums, start+1,mem),nums[start]+dp(nums,start+2,mem));
+        mem[start] = temp;
+        return temp;
+    }
+public:
+    int rob(vector<int>& nums){
+        int n = nums.size();
+        vector<int> mem(n, -1);
+        return dp(nums, 0, mem); 
+    }
+};
+/*自底向上*/
+class Solution{
+public:
+    int rob(vector<int>& nums){
+        int n = nums.size();
+        int dp[n+2];
+        for(int i = 0; i < n+2; i++){
+            dp[i] = 0;
+        }
+        for(int i = n - 1;i >=0; i--){
+            dp[i] = max(dp[i+1],nums[i]+dp[i+2]);
+        }
+        
+        return dp[0];
+    }  
+};
+/*自底向上的优化，由于当前只和其后的两个状态有关，所以可以使用变量保存后两个状态的值*/
+class Solution{
+public:
+    int rob(vector<int>& nums){
+        int n = nums.size();
+        int dp_i_1 = 0, dp_i_2 = 0;
+        //记录 dp[i+1] 和 dp[i+2]
+        int dp_i = 0;
+        // 记录 dp[i]
+        for(int i = n - 1;i >=0; i--){
+            dp_i = max(dp_i_1,nums[i]+dp_i_2);
+            dp_i_2 = dp_i_1;
+            dp_i_1 = dp_i;
+        }
+        
+        return dp_i;
+    }  
+};
+```
 
-### 数的构造
+[213. 打家劫舍 II](https://leetcode-cn.com/problems/house-robber-ii/)
+
+```c++
+/*在上题的基础上，所有的房屋都围成一圈，这意味着第一个房屋和最后一个房屋是紧挨着的*/
+class Solution {
+private:
+    int robrange(vector<int>& nums, int start, int end){
+        int dp_i_1 = 0, dp_i_2 = 0, dp_i = 0;
+        for(int i = end; i>=start; i--){
+            dp_i = max(dp_i_1, nums[i]+dp_i_2);
+            dp_i_2 = dp_i_1;
+            dp_i_1 = dp_i;
+        }
+        
+        return dp_i;
+    }
+public:
+    int rob(vector<int>& nums) {
+        int n = nums.size();
+        if(n == 1) return nums[0];
+        return max(robrange(nums, 0, n-2), robrange(nums, 1, n-1));
+    }
+};
+```
+
+[337. 打家劫舍 III](https://leetcode-cn.com/problems/house-robber-iii/)
+
+```c++
+/*这个地方的所有房屋的排列类似于一棵二叉树,相连的两个房子不能同时被抢劫*/
+class Solution {
+private:
+    unordered_map<TreeNode*, int>mem;
+public:
+    int rob(TreeNode* root) {
+        if(root == nullptr){
+            return 0;
+        }
+        if(mem.find(root) != mem.end()){
+            return mem[root];
+        }
+        int do_it = root->val + (root->left == nullptr ? 0 : rob(root->left->left)+rob(root->left->right))+(root->right == nullptr ? 0 : rob(root->right->left)+rob(root->right->right));
+        int not_do = rob(root->left) + rob(root->right);
+
+        int temp = max(do_it, not_do);
+        mem[root] = temp;
+
+        return temp;
+    }
+};
+```
+
+## 二叉树
+
+**树的度**：是树内所有节点度的最大值，节点的度：节点拥有的子树的个数
+
+### 二叉树的构造
 
 建树的相关步骤：
 
@@ -247,6 +373,14 @@ TreeNode* build(1...) {
     root->right = build(5...); // 递归建立右子树
     return root;
 }
+// 假设元素在数组v中，并且头结点的下标为 root_index, first < root_index < last,
+TreeNode* build(int first, int last) {
+    if (first > last) return nullptr;
+    TreeNode *root = new TreeNode(v[root_index]);
+    root->left = build(first, root_index - 1);
+    root->right = build(root_index + 1, last);
+    return root;
+} 
 ```
 
 如果大家知道了上述建树的伪代码后，那么括号应该填什么呢？
@@ -257,9 +391,37 @@ TreeNode* build(1...) {
 4. 左子树的数组元素
 5. 右子树的数组元素
 
-**思考**：由前序遍历和中序遍历的结果，重建该二叉数
+#### 题目
 
-### 数的遍历
+由前序遍历和中序遍历的结果，重建该二叉数
+
+```c++
+class Solution {
+public:
+    TreeNode* build(vector<int> pre, int pre_left, int pre_right, vector<int> vin, int vin_left, int vin_right){
+        if(pre_left > pre_right) return nullptr;
+        TreeNode* root = new TreeNode(pre[pre_left]);
+        
+        for(int i = vin_left; i <= vin_right; ++i){
+            if(vin[i] == root->val){
+                root->left = build(pre,pre_left+1,pre_left+i-vin_left,vin, vin_left, i-1);
+                root->right = build(pre,pre_left+i-vin_left+1,pre_right,vin,i+1,vin_right);
+            }
+        }
+        
+        return root;
+    }
+    
+    
+    TreeNode* reConstructBinaryTree(vector<int> pre,vector<int> vin) {
+        return build(pre, 0, pre.size()-1, vin, 0, vin.size()-1);
+    }
+};
+//root_index - vin_left为根结点左边有几个元素
+//pre_left + root_index - vin_left 为从pre_left开始往后推这么多元素pre_left + root_index - vin_left 为从pre_left开始往后推这么多元素
+```
+
+### 二叉树的遍历
 
 1. 前序遍历（根左右）
 
@@ -334,6 +496,131 @@ TreeNode* build(1...) {
    }
    ```
 
+通过遍历可以求得树的深度
+
+```c++
+class Solution{
+  public:
+    int TreeDepth(TreeNode* pRoot){
+        if(!pRoot) return 0;
+        int dl = TreeDepth(pRoot->left);
+        int dr = TreeDepth(pRoot->right);
+        return max(dl,dr)+1;
+    }
+};
+```
+
+
+
+### 二叉搜索树
+
+BST：binary search tree
+
+对其进行**中序遍历**，得到有序的序列。
+
+#### 二叉搜索树的查找
+
+```c
+/*查找key是否存在二叉搜索树T中，指针f指向T的双亲，初始值为NULL，指针p指向查找到的数据节点，并返回True*/
+bool SearchBST(BiTree T, int key, BiTree f, BiTree* p){
+    if(!T){
+        *p = f;
+        return false;
+    }
+    else if(key == T->data){
+        *p = T;
+        return true;
+    }
+    else if(key < T->data){
+        return SearchBST(T->left, key, T, p);
+        //在左子树进行查找
+    }
+    else{
+        return SearchBST(T->right, key, T, p);
+        //在右子树进行查找
+    }
+}
+```
+
+#### 二叉树节点的插入
+
+```c
+bool InsertBST(BiTree *T, int key){
+    BiTree p,s;
+    if(!SearchBST(*T, key, NULL, p)){//查找不成功，树中不存在输入的关键字
+        s = (BiTree)Malloc(sizeof(BiTree));
+        s -> data = key;
+        s -> left = s -> right = NULL;
+        if(!p){
+            *T = s;         //插入s为新的根节点
+        }else if(key < p->data){
+            p->left = s;    //插入s为左孩子
+        }else{
+            p->right = s;   //插入s为右孩子
+        }
+        return true;
+    }else{
+        return false;
+        /*数中已有关键字相同的节点，不再插入*/
+    }
+}
+```
+
+#### 二叉树节点的删除
+
+```c
+bool DeleteBST(BiTree* T, int key){
+    if(!T){
+        return false;
+    }
+    else{
+        if(key == (*T)->data) return Delete(T);
+        else if(key < (*T)->data){
+            return DeleteBST(&(*T)->left, key);
+        }
+        else{
+            return DeleteBST(&(*T)->right, key);
+        }
+    }
+}
+
+bool Delete(BiTree* p){
+    BiTree q,s;
+    if((*p)->right == NULL){       //右子树为空，只需接它的左子树
+        q = *p;
+        *p = (*p)->left;
+        free(q);
+    }else if((*p)->left == NULL){  //左子数为空，只需接它的右子树
+        q = *p;
+        *p = (*p)->right;
+    }
+    else{                          //左右子树均不为空
+        q = *p;
+        s = (*p)->left;
+        while(s->right){           //转左，然后向右到尽头
+            q = s;
+            s = s->right;
+        }
+        (*p)->data = s->data;
+        if(q != (*p)){
+            q->right = s->left;    //重接q的右子树
+        }
+        else{
+            q->left = s->left;     //重接q的左子树
+        }
+        free(s);
+    }
+    
+    return true;
+}
+```
+
+### 平衡二叉树
+
+平衡二叉树是一种**二叉排序树**（二叉搜索树），其中每一个节点的左子树和右子树的高度差至多等于1。
+
+
+
 ## 图遍历
 
 ### 深度优先遍历（DFS）回溯
@@ -351,7 +638,7 @@ def backtrack(路径, 选择列表):
         撤销选择
 ```
 
-数字的全排列
+46.全排列（Leetcode）
 
 ```c++
 class Solution{
@@ -384,9 +671,101 @@ class Solution{
 };
 ```
 
+[剑指 Offer 38. 字符串的排列](https://leetcode-cn.com/problems/zi-fu-chuan-de-pai-lie-lcof/)
+
+```c++
+/*输入一个字符串，打印出该字符串中字符的所有排列。*/
+//考虑输入字符串出现重复的情况
+class Solution {
+private:
+    void dfs (vector<string>& result, vector<char>& c_char, int size, int depth){
+        if(depth == size){
+            string s_temp(c_char.begin(), c_char.end());
+            result.push_back(s_temp);
+            return;
+        }
+        unordered_set<char> path;
+        for(int i = depth; i < size; i++){
+            if(path.count(c_char[i])){
+                continue;
+            }
+            path.insert(c_char[i]);
+            swap(c_char[i],c_char[depth]);
+            dfs(result, c_char, size, depth+1);
+            swap(c_char[i],c_char[depth]);
+        }
+    }
+public:
+    vector<string> permutation(string s) {
+        vector<string> result;
+        vector<char> c_char;
+        int size = s.length();
+        for(int i = 0; i < size; i++){
+            c_char.push_back(s[i]);
+        }
+        dfs(result, c_char, size, 0);
+
+        return result;
+    }
+};
+```
+
+```c++
+/*解法2,使用next_permutation，其输入必须是升序的*/
+class Solution {
+public:
+    vector<string> Permutation(string str) {
+        if(str.empty()) return{};
+        vector<string> num;
+        sort(str.begin(), str.end());
+        num.push_back(str);
+        while(next_permutation(str.begin(), str.end())){
+            num.push_back(str);
+        }
+        
+        return num;
+    }
+};
+```
+
+
+
 N皇后问题
 
 ### 广度优先遍历（BFS）
+
+写 BFS 算法都是用**队列**这种数据结构
+
+```c++
+// 计算从起点 start 到终点 target 的最近距离
+int BFS(Node start, Node target) {
+    Queue<Node> q; // 核心数据结构
+    Set<Node> visited; // 避免走回头路
+
+    q.offer(start); // 将起点加入队列
+    visited.add(start);
+    int step = 0; // 记录扩散的步数
+
+    while (q not empty) {
+        int sz = q.size();
+        /* 将当前队列中的所有节点向四周扩散 */
+        for (int i = 0; i < sz; i++) {
+            Node cur = q.poll();
+            /* 划重点：这里判断是否到达终点 */
+            if (cur is target)
+                return step;
+            /* 将 cur 的相邻节点加入队列 */
+            for (Node x : cur.adj())
+                if (x not in visited) {
+                    q.offer(x);
+                    visited.add(x);
+                }
+        }
+        /* 划重点：更新步数在这里 */
+        step++;
+    }
+}
+```
 
 111.二叉数的最小深度
 
@@ -424,6 +803,8 @@ public:
 ```
 
 ## 二分查找
+
+搜索前提是搜索的数据是**有序**的，对于需要频繁执行插入或者删除操作的数据集来说，维护有序的数据集如果带来不小的工作量，不建议使用二分查找
 
 ```c++
 int binarySeaech(vector<int>& nums, int target){
@@ -507,6 +888,18 @@ int right_bound(int[] nums, int target) {
 }
 ```
 
+### 二分查找的改进
+
+**插值查找** 
+`int mid = left + (right - left)*((target-nums[left])/(nums[right]-nums[left]));`，相当于按照比例进行分割，但是，会出现`nums[right]==num[left]`的情况，即除数为零。
+
+**斐波那契查找**
+需要构架斐波那契数组，按照斐波那契数组给定的当前值等于其前两个值相加的特性，把要查找的数组的个数作为斐波那契的数，把要查找的数组长度划分：
+
+![](Photo/斐波那契查找.png)
+
+`int mid  = left + F[k-1]-1`
+
 ## 滑动窗口技巧
 
 76.最小覆盖子串
@@ -588,7 +981,7 @@ for 0 <= i < n:
             dp[i][k][s] = max(buy, sell, rest)
 ```
 
-#### [121. 买卖股票的最佳时机](https://leetcode-cn.com/problems/best-time-to-buy-and-sell-stock/)
+[121. 买卖股票的最佳时机](https://leetcode-cn.com/problems/best-time-to-buy-and-sell-stock/)
 
 **确定状态转移方程**
 
