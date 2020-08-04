@@ -18,6 +18,58 @@
 
 分析递归问题，最好都画出递归树
 
+两个数的最大公约数和最小公倍数存在以下关系：`最小公倍数×最大公约数 = 两数之积`
+
+## 牛顿迭代法
+
+
+
+## 欧几里得算法（辗转相除法）
+
+定理：两个整数的最大公约数等于其中较小的那个数和两数相除余数的最大公约数。最大公约数（Greatest Common Divisor）缩写为GCD。
+
+假如需要求 1997 和 615 两个正整数的最大公约数，用欧几里德算法，是这样进行的：
+
+1997 / 615 = 3 (余 152)
+
+615 / 152 = 4(余7)
+
+152 / 7 = 21(余5)
+
+7 / 5 = 1 (余2)
+
+5 / 2 = 2 (余1)
+
+2 / **1** = 2 (余0)
+
+至此，最大公约数为1。以除数和余数反复做除法运算，当余数为 0 时，取当前算式除数为最大公约数，所以就得出了 1997 和 615 的最大公约数 1。
+
+```c++
+//求num1和num2的最小公倍数
+#include<iostream>
+using namespace std;
+int gcd(int a, int b){
+    if(a < b) swap(a,b);
+    return b==0 ? a:gcd(b,a%b);
+}
+int main(){
+    int num1, num2;
+    int result;
+    cin >> num1;
+    cin >> num2;
+    result = (num1*num2)/gcd(num1,num2);
+    cout << result << endl;
+    return 0;
+}
+```
+
+## 尼科彻斯定理
+
+任何一个整数m的立方都可以写成m个连续奇数之和。
+$$
+1^3 = 1\\2^3 = 3+5\\3^3 = 7+9+11\\4^3 = 13+15+17+19
+$$
+
 ## 位运算
 
 ### 计算整数二进制中1的个数（以int类型为例，32个bit）
@@ -30,7 +82,7 @@
    void bitcount(int n){
        int count = 0;
        for(int i = 0; i < 32; i++){
-           if(((n>>i) & 1) == 1){
+           if((n>>i) & 1){
                count++;
            }
        }
@@ -46,7 +98,7 @@
    void bitcount(int n){
        int count = 0;
        for(int i = 0; i < 32; i++){
-           if(((1<<i) & n) != 0){
+           if((1<<i) & n){
                count++;
            }
        }
@@ -149,6 +201,44 @@ for 状态1 in 状态1的所有取值：
             dp[状态1][状态2][...] = 求最值(选择1，选择2...)
 ```
 
+### 自顶向下
+
+将一个大规模问题向下分解为小规模问题，然后逐层返回答案。一般使用递归的方法，比如斐波那契数列的递归求解：
+
+```c++
+int fib(vector<int>& dp, int N){
+    if(N == 1 || N == 2) return 1;//base case
+    if(dp[N] != 0) return dp[N];
+    dp[N] = fib(dp, N-1) + fib(dp, N-2);
+    return dp[N];
+}
+
+int main(){
+    int N;
+    
+    while(cin >> N){
+        vector<int> dp(N+1,0);
+        cout << fib(dp, N) << endl;
+    }
+    return 0;
+}
+```
+
+### 自底向上
+
+直接从最底下、最简单的问题，向上推导出复杂的待求问题。一般自底向上的都是使用迭代的方法，比如斐波那契数列的迭代求解：
+
+```c++
+int dp(int N){
+    vector<int> dp(N+1, 0);
+    dp[1] = dp[2] = 1;//base case
+    for(int i = 0; i < N; i++){
+        dp[i] = dp[i-1] + dp[i-2];
+    }
+    return dp[N];
+}
+```
+
 ### 题目
 
 1. 青蛙跳台阶
@@ -235,6 +325,40 @@ $$
    ```
 
 5. #### [375. 猜数字大小 II](https://leetcode-cn.com/problems/guess-number-higher-or-lower-ii/)
+
+6. #### [509. 斐波那契数](https://leetcode-cn.com/problems/fibonacci-number/)
+
+7. #### [322. 零钱兑换](https://leetcode-cn.com/problems/coin-change/)
+
+   ![](Photo/coin.png)
+
+   自底向上解决方法：
+
+   ```c++
+   int coinChange(vector<int>& coins, int amount){
+       vector<int> dp(amount+1, amount+1);
+       dp[0] = 0;//base case
+       for(int i = 0; i < dp.size(); i++){
+           for(int j = 0; j < coins.size(); j++){
+               if(i - coins[j] < 0) continue;
+               dp[i] = min(dp[i], 1+dp[i-coins[j]]);
+           }
+       }
+       /*
+       for(int i = 0; i < dp.size(); i++){
+           for(int coin : coins){
+                if(i - coin < 0) continue;
+                dp[i] = min(dp[i], 1+dp[i-coin]);
+           }
+       }
+       */
+       return (dp[amount] == amount+1) ? -1 : dp[amount];
+   }
+   ```
+
+   coins为1、2、5的情况下：
+
+   <img src="Photo/coin.jpg" style="zoom:30%;" />
 
 ### 打家劫舍问题
 
