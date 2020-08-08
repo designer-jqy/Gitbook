@@ -22,7 +22,38 @@
 
 ## 牛顿迭代法
 
+以直代曲，求方程的近似解。使用函数f(x)的**泰勒级数**的前面几项来寻找方程
+$$
+f(x) = 0
+$$
+的根。
 
+迭代公式：
+$$
+x_{n+1} = x_{n} - \frac{f(x_n)}{f\prime(x_n)}
+$$
+
+```c++
+\\计算一个数字的立方根，不使用库函数
+#include<iostream>
+#include<cmath>
+using namespace std;
+double ND(double& a){
+    double x = 1;
+    while(abs(x*x*x - a) > 1e-7){
+        x = (2*x*x*x + a)/(3*x*x);
+    }
+    return x;
+}
+int main(){
+    double num;
+    while(cin >> num){
+        double result = ND(num);
+        printf("%.1lf\n", result);
+    }
+    return 0;
+}
+```
 
 ## 欧几里得算法（辗转相除法）
 
@@ -743,7 +774,7 @@ bool Delete(BiTree* p){
 
 平衡二叉树是一种**二叉排序树**（二叉搜索树），其中每一个节点的左子树和右子树的高度差至多等于1。
 
-
+红黑树是一种特化的AVL树（平衡二叉树），都是在进行插入和删除操作时通过特定操作保持二叉查找树的平衡，从而获得较高的查找性能。红黑树是一种平衡二叉查找树的变体，它的左右子树高差有可能大于 1，所以红黑树不是严格意义上的AVL，但 对之进行平衡的代价较低， 其平均统计性能要强于 AVL 
 
 ## 图遍历
 
@@ -1156,3 +1187,31 @@ dp[i][k][0] = max(dp[i-1][k][0], dp[i-1][k][1]+prices[i]);
 dp[i][k][1] = max(dp[i-1][k][1], dp[i-1][k-1][0]-prices[i]);
 ```
 
+## 快慢指针
+
+题目：
+
+1. [剑指 Offer 22. 链表中倒数第k个节点](https://leetcode-cn.com/problems/lian-biao-zhong-dao-shu-di-kge-jie-dian-lcof/)
+
+   ```c++
+   /*输入一个链表，输出该链表中倒数第k个节点。为了符合大多数人的习惯，本题从1开始计数，即链表的尾节点是倒数第1个节点。例如，一个链表有6个节点，从头节点开始，它们的值依次是1、2、3、4、5、6。这个链表的倒数第3个节点是值为4的节点。*/
+   class Solution {
+   public:
+       ListNode* getKthFromEnd(ListNode* head, int k) {
+           ListNode* fast;
+           ListNode* slow;
+           fast = slow = head;
+           for(int i = 0; i < k; i++){
+               fast = fast->next;
+           }
+           while(fast != NULL){
+               fast = fast->next;
+               slow = slow->next;
+           }
+   
+           return slow;
+       }
+   };
+   ```
+
+2. 
