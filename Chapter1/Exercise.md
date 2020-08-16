@@ -103,6 +103,14 @@ $$
 
 ## 位运算
 
+小写比大写的ASCII码大32；
+
+大写变小写、小写变大写：字符^=32
+
+大写变小写、小写变小写：字符|=32
+
+小写变大写、大写变大写：字符&=-33
+
 ### 计算整数二进制中1的个数（以int类型为例，32个bit）
 #### 方法1：移动
 
@@ -1116,8 +1124,6 @@ class Solution{
 };
 ```
 
-
-
 438.找到字符串中所有字母异位词
 
 3.无重复字符的最长字串
@@ -1187,31 +1193,98 @@ dp[i][k][0] = max(dp[i-1][k][0], dp[i-1][k][1]+prices[i]);
 dp[i][k][1] = max(dp[i-1][k][1], dp[i-1][k-1][0]-prices[i]);
 ```
 
-## 快慢指针
+## 双指针
+
+一类为快慢指针，一类为左右指针；前者主要解决链表中的问题，后者主要解决数组（或者字符串）中的问题。
+
+### 快慢指针
+
+![](Photo/cycle_list.png)
+
+1. 判断链表是否有环
+
+   ```c++
+   bool hasCycle(ListNode head){
+       ListNode fast, slow;
+       fast = slow = head;
+       while(fast != NULL & fast.next != NULL){
+           fast = fast.next.next;
+           slow = slow.next;
+           if(slow == fast) return true;
+       }
+       return false;
+   }
+   ```
+
+2. 已知链表有环，返回这个环的起始位置
+
+   ![](Photo/cycle_list_head.png)
+
+   ```c++
+   ListNode detectCycle(ListNode head){
+       ListNode fast, slow;
+       fast = slow = head;
+       while(fast != NULL & fast.next != NULL){
+           fast = fast.next.next;
+           slow = slow.next;
+           if(fast == slow) break;
+       }
+       slow = head;
+       while(slow != fast){
+           fast = fast.next;
+           slow = slow.next;
+       }
+       return slow;
+   }
+   ```
+
+3. 寻找链表的中点
+
+   ```c++
+   while(fast != NULL & fast->next != NULL){
+       fast = fast->next->next;
+       slow = slow->next;
+   }
+   return slow;
+   ```
+
+   链表长度为奇数时，slow停在中点位置；长度为偶数时，slow停在中间偏右。寻找链表中点的一个作用是对链表进行归并排序。
+
+4. 寻找链表的倒数第k个元素
 
 题目：
 
 1. [剑指 Offer 22. 链表中倒数第k个节点](https://leetcode-cn.com/problems/lian-biao-zhong-dao-shu-di-kge-jie-dian-lcof/)
 
+```c++
+/*输入一个链表，输出该链表中倒数第k个节点。为了符合大多数人的习惯，本题从1开始计数，即链表的尾节点是倒数第1个节点。例如，一个链表有6个节点，从头节点开始，它们的值依次是1、2、3、4、5、6。这个链表的倒数第3个节点是值为4的节点。*/
+class Solution {
+public:
+    ListNode* getKthFromEnd(ListNode* head, int k) {
+        ListNode* fast;
+        ListNode* slow;
+        fast = slow = head;
+        for(int i = 0; i < k; i++){
+            fast = fast->next;
+        }
+        while(fast != NULL){
+            fast = fast->next;
+            slow = slow->next;
+        }
+
+        return slow;
+    }
+};
+```
+
+### 左右指针
+
+1. 二分查找
+
+2. #### [剑指 Offer 57. 和为s的两个数字](https://leetcode-cn.com/problems/he-wei-sde-liang-ge-shu-zi-lcof/)
+
    ```c++
-   /*输入一个链表，输出该链表中倒数第k个节点。为了符合大多数人的习惯，本题从1开始计数，即链表的尾节点是倒数第1个节点。例如，一个链表有6个节点，从头节点开始，它们的值依次是1、2、3、4、5、6。这个链表的倒数第3个节点是值为4的节点。*/
-   class Solution {
-   public:
-       ListNode* getKthFromEnd(ListNode* head, int k) {
-           ListNode* fast;
-           ListNode* slow;
-           fast = slow = head;
-           for(int i = 0; i < k; i++){
-               fast = fast->next;
-           }
-           while(fast != NULL){
-               fast = fast->next;
-               slow = slow->next;
-           }
-   
-           return slow;
-       }
-   };
+   /*输入一个递增排序的数组和一个数字s，在数组中查找两个数，使得它们的和正好是s。如果有多对数字的和等于s，则输出任意一对即可。*/
    ```
 
-2. 
+3. 反转数组
