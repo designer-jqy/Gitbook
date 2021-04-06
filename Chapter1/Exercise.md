@@ -209,6 +209,13 @@ while(num2 != 0){
     num2 = a;
 }
 return num1;
+/*
+*while(b != 0) {
+*	c = ((unsigned int)(a & b)) << 1;     1.计算进位c
+*	a = a^b;         2.计算无进位和n，赋值给a
+*	b = c;           3.将进位c赋值给b
+*}
+*/
 ```
 
 ## 动态规划
@@ -782,7 +789,11 @@ bool Delete(BiTree* p){
 
 平衡二叉树是一种**二叉排序树**（二叉搜索树），其中每一个节点的左子树和右子树的高度差至多等于1。
 
-红黑树是一种特化的AVL树（平衡二叉树），都是在进行插入和删除操作时通过特定操作保持二叉查找树的平衡，从而获得较高的查找性能。红黑树是一种平衡二叉查找树的变体，它的左右子树高差有可能大于 1，所以红黑树不是严格意义上的AVL，但 对之进行平衡的代价较低， 其平均统计性能要强于 AVL 
+红黑树是一种特化的AVL树（平衡二叉树），都是在进行插入和删除操作时通过特定操作保持二叉查找树的平衡，从而获得较高的查找性能。红黑树是一种平衡二叉查找树的变体，它的左右子树高差有可能大于 1，所以红黑树不是严格意义上的AVL，但对之进行平衡的代价较低， 其平均统计性能要强于 AVL
+
+1. 红黑树的根结点为黑
+2. 红节点不连续，黑节点可以连续
+3. 从一节点到达NULL的所有路径都包含有相同数目的黑色节点
 
 ## 图遍历
 
@@ -839,6 +850,35 @@ class Solution{
 ```c++
 /*输入一个字符串，打印出该字符串中字符的所有排列。*/
 //考虑输入字符串出现重复的情况
+class Solution{
+private:
+    void dfs(string& s, int len, int index, vector<string>& res)
+    {
+        if(index == len - 1)
+        {
+            res.emplace_back(s);
+            return;
+        }
+        set<char> used;
+        for(int i = index; i < len; i++)
+        {
+            if(used.count(s[i])) continue;
+            used.insert(s[i]);
+            swap(s[i], s[index]);
+            dfs(s, len, index+1, res);
+            swap(s[i], s[index]);
+        }
+    }
+public:
+    vector<string> permutation(string s){
+        vector<string> res;
+        int len = s.size();
+        dfs(s, len, 0, res);
+        
+        return res;
+    }
+}
+/**************************/
 class Solution {
 private:
     void dfs (vector<string>& result, vector<char>& c_char, int size, int depth){
