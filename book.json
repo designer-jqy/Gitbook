@@ -1,0 +1,13 @@
+{
+	"title":"My Gitbook",
+	"author":"vc",
+	"plugins":[
+		"edit-link"
+	],
+	"pluginsConfig":{
+		"edit-link":{
+			"base":"https://designer-jqy.github.io/Gitbook/edit/development-blog",
+			"label":"edit"
+		}
+	}
+}
