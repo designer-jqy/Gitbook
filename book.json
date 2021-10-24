@@ -2,7 +2,9 @@
 	"title":"My Gitbook",
 	"author":"vc",
 	"plugins":[
-		"edit-link"
+		"edit-link",
+		"back-to-top-button",
+		"chapter-fold"
 	],
 	"pluginsConfig":{
 		"edit-link":{
