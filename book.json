@@ -8,7 +8,7 @@
 	],
 	"pluginsConfig":{
 		"edit-link":{
-			"base":"https://designer-jqy.github.io/Gitbook/edit/development-blog",
+			"base":"https://github.com/designer-jqy/Gitbook/edit/feature/development-blog",
 			"label":"edit"
 		}
 	}
