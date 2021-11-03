@@ -5,6 +5,10 @@ Node.js
 基于Node.js的Web框架: Express、
 实现网页更新
 AJAX = Asynchronous JavaScript and XML
+1. XHR(XMLHttpRequest)用于和服务器交互，可以在操作界面中，不刷新页面和不影响用户操作的情况下，请求特定的URL接口，获取数据动态更新页面的局部内容(XHR在AJAX编程中被大量使用)
+
+## 参考
+1. [XMLHttpRequest](https://developer.mozilla.org/zh-CN/docs/Web/API/XMLHttpRequest)
 # OSI Model
 1. Application: 应用层 Protocols: HTTP、HTTPS、FTP、NFS、TELENT、DHCP、SMTP等
 2. Presentation: 表示层
