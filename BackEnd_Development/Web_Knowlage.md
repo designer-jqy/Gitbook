@@ -30,3 +30,13 @@ AJAX = Asynchronous JavaScript and XML
 7. Physical: 物理层
 
 Web browser可以执行OSI七层中应用层、表示层、会话层的所有API函数
+# 框架
+RPC(Remote procedure call): 远程过程调用[service/client模型]
+## gRPC使用场景
+1. 对接口进行严格约束
+2. 对性能有更高的要求
+
+Protocol buffers: 一套类似Json和XML的数据传输格式和规范，用于不同应用或进程之间进行通信时使用[protobuf]
+## 参考
+1. [gRPC详解](https://www.jianshu.com/p/9c947d98e192)
+2. [Protocol Buffers](https://developers.google.com/protocol-buffers/docs/overview)
