@@ -1,3 +1,11 @@
+# Rust
+Statics are initialized at compile time, in contrast to normal variables that are initialized at run time.
+The 'static lifetime specifies that the reference is valid for the whole program run time.
+
+## raw pointer
+Rust’s ownership rules don’t allow a mutable reference at the same time as any immutable references. With raw pointers, we can create a mutable pointer and an immutable pointer to the same location and change data through the mutable pointer, potentially creating a data race. Be careful!
+
+
 # Rust OS
 
 ## CPU Exceptions
