@@ -226,18 +226,202 @@ pub fn init_idt() {
 }
 ```
 
-现在，
+现在，可以添加处理函数。首先从添加中断异常处理函数开始，中断异常非常适合用来测试异常处理，当中断指令`int3`被执行时，它仅用于临时暂停程序。
+
+中断异常通常用于调试器: 当用户设置了一个断点时，调试器会使用`int3`指令覆盖程序相应的指令，从而使CPU在到达该行时抛出断点异常。当用户想继续执行程序时，调试器会使用程序原有的指令替换`int3`，并继续执行程序。更多的细节，可通过查阅[调试器是如何工作的](https://eli.thegreenplace.net/2011/01/27/how-debuggers-work-part-2-breakpoints)系列文章。
+
+在当前的例子中，不需要覆盖任何的指令，只需要在中断指令被执行时，打印一个信息然后继续执行程序，可通过创建一个简单的`breakpoint_handler`函数并将其加入IDT中，实现该功能:
+```rust
+// in src/interrupts.rs
+
+use x86_64::structures::idt::{InterruptDescriptorTable, InterruptStackFrame};
+use crate::println;
+
+pub fn init_idt() {
+    let mut idt = InterruptDescriptorTable::new();
+    idt.breakpoint.set_handler_fn(breakpoint_handler);
+}
+
+extern "x86-interrupt" fn breakpoint_handler(stack_frame: InterruptStackFrame) {
+    println!("EXCEPTION: BREAKPOINT\n{:#?}", stack_frame);
+}
+```
+
+该处理函数仅输出了一个信息并打印了中断栈帧。
+尝试编译时，会产生如下的错误:
+```rust
+error[E0658]: x86-interrupt ABI is experimental and subject to change (see issue #40180)
+  --> src/main.rs:53:1
+   |
+53 | / extern "x86-interrupt" fn breakpoint_handler(stack_frame: InterruptStackFrame) {
+54 | |     println!("EXCEPTION: BREAKPOINT\n{:#?}", stack_frame);
+55 | | }
+   | |_^
+   |
+   = help: add #![feature(abi_x86_interrupt)] to the crate attributes to enable
+```
+
+该错误的原因是由于`x86-interrupt`的调用协议还不稳定，需要在`lib.rs`文件的顶部，添加`#![feature(abi_x86_interrupt)]`来明确的使能该协议。
 
 ### 载入IDT
 
+为了使CPU能够使用新的中断描述符表，需要使用`lidt`指令加载该表。`x86_64`的`InterruptDescriptorTable`结构体中，提供了实现该功能的`load`方法，使用方法如下:
+```rust
+// in src/interrupts.rs
 
+pub fn init_idt() {
+    let mut idt = InterruptDescriptorTable::new();
+    idt.breakpoint.set_handler_fn(breakpoint_handler);
+    idt.load();
+}
+```
+
+尝试编译时，会产生如下的错误:
+```rust
+error: `idt` does not live long enough
+  --> src/interrupts/mod.rs:43:5
+   |
+43 |     idt.load();
+   |     ^^^ does not live long enough
+44 | }
+   | - borrowed value only lives until here
+   |
+   = note: borrowed value must be valid for the static lifetime...
+```
+
+由于`load`方法希望一个在程序整个运行时都有效的`'static self`引用，因为除了加载不同的`IDT`，CPU会在每个异常中访问该中断描述符表，所以，使用短于`'static`的生命周期，可能会导致释放后引用的bug。
+
+事实上，这正是该例子的逻辑。`idt`创建于栈中，所以它仅在`init`函数中有效，之后，其他函数将复用该段栈内存，这会使CPU把任意的栈内存解释为IDT；幸运的是，`InterruptDescriptorTable::load`方法将生命周期的需求，编码在了它的函数定义中，所以rust编译器能够在编译器防止这个可能的bug。
+
+为了修复该问题，需要在拥有`'static`生命周期的地方存储`idt`。可通过在堆上使用`Box`，给IDT分配相应的空间，并将其转换为`'static`引用来实现该需求；但是，目前的操作系统内核，还没有堆。
+
+作为一个替代方案，可以将IDT存储为`static`类型:
+```rust
+static IDT: InterruptDescriptorTable = InterruptDescriptorTable::new();
+
+pub fn init_idt() {
+    IDT.breakpoint.set_handler_fn(breakpoint_handler);
+    IDT.load();
+}
+```
+
+但是，这里有个问题: `static`是不可变的，在`init`函数中将无法修改断点条目。我们可以通过使用一个`static mut`类型来解决该问题:
+
+```rust
+static mut IDT: InterruptDescriptorTable = InterruptDescriptorTable::new();
+
+pub fn init_idt() {
+    unsafe { 
+        IDT.breakpoint.set_handler_fn(breakpoint_handler);
+        IDT.load();
+    }
+}
+```
+
+这种变体可顺利通过编译，但是不符合管用方法。`static mut`非常容易发生数据竞争，所以在每个访问中，都需要一个`unsafe`块。
+
+#### 通过Lazy Static拯救
+
+幸运的是，存在`lazy_static`宏，该宏在`static`首次被引用时，执行初始化，而非编译时期评估`static`。因此，几乎可以在初始块中做任务事情，甚至能够读取运行时的值。
+
+我们在[创建VGA文本缓存抽象时](https://os.phil-opp.com/vga-text-mode/#lazy-statics)，已经导入过`lazy_static`包；所以，我们可以通过直接使用`lazy_static!`宏，来创建静态IDT:
+```rust
+// in src/interrupt.rs
+
+use lazy_static::lazy_static;
+
+lazy_static! {
+    static ref IDT: InterruptDescriptorTable = {
+        let mut idt = InterruptDescriptorTable::new();
+        idt.breakpoint.set_handler_fn(breakpoint_handler);
+        idt
+    };
+}
+
+pub fn init_idt() {
+    IDT.load();
+}
+```
+
+注意该方法如何通过不使用`unsafe`块，来解决问题。`lazy_static!`宏在幕后使用了`unsafe`块，但是它抽象为了一个安全的接口。
 
 ### 运行它
 
+使异常在内核中工作的最后一步，是从`main.rs`中调用`init_idt`函数；我们在`lib.rs` 中通过一种通用的`init`函数，来代替直接调用，
+```rust
+// in src/lib.rs
 
+pub fn init() {
+    interrupts::init_idt();
+}
+```
+
+该函数作为初始化例程的集中地，可以在`main.rs`、`lib.rs`和集成测试中的不同`_start`函数之间进行共享。
+
+现在，可以在`main.rs`中，通过调用`init`更新`_start`函数，触发一个断点异常:
+
+```rust
+// in src/main.rs
+
+#[no_mangle]
+pub extern "C" fn _start() -> ! {
+    println!("Hello world{}", "!");
+    
+    blog_os::init(); // new
+
+    // invoke a breakpoint exception
+    x86_64::instruction::interrupts::int3(); // new
+
+    // as before
+    #[cfg(test)]
+    test_main();
+
+    println!("It did not crash!");
+    loop {}
+}
+```
+
+现在运行QEMU(使用`cargo run`)，将看到如下的输出:
+
+![](https://os.phil-opp.com/cpu-exceptions/qemu-breakpoint-exception.png)
+
+它正常工作了！CPU成功调用了中断异常处理函数，该函数打印了对应的信息并返回到`_start`，打印了`It did not crash!`信息。
+当发生异常时，中断栈帧存储了该时刻的指令和栈指针。在调试意外异常时，该信息非常有用。
 
 ### 增加Test
 
+创建一个测试来保证以上程序持续正常工作。首先，在`_start`函数中调用`init`:
 
+```rust
+// in src/lib.rs
+
+/// Entry point fot `cargo test`
+#[cfg(test)]
+#[no_mangle]
+pub extern "C" fn _start() -> !{
+    init();    // new
+    test_main();
+    loop {}
+}
+```
+
+该`_start`函数，仅在运行`cargo test --lib`时被使用，因为rust的测试完全独立于`main.rs`，因此，在运行测试前，需要在此处调用`init`设置IDT。
+接下来，可以创建一个`test_breakpoint_exception`测试:
+```rust
+// in src/interrupts.rs
+
+#[test_case]
+fn test_breakpoint_exception() {
+    // invoke a breakpoint exception
+    x86_64::instruction::interrupts::int3();
+}
+```
+
+该测试通过调用`int3`函数来触发一个断点异常，通过检查该异常之后，程序是否正常运行，验证断点处理函数是否正常工作。
+可通过运行`cargo test`(所有的测试)或者`cargo test --lib`(仅`lib.rs`和它模块中的测试)，触发该新测试，可以看到如下的输出:
+```rust
+blog_os::interrupts::test_breakpoint_exception...	[ok]
+```
 
 ## Too much Magic
+
