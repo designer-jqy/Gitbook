@@ -424,4 +424,7 @@ blog_os::interrupts::test_breakpoint_exception...	[ok]
 ```
 
 ## Too much Magic
-
+ 
+ `x86-interrupt`调用协议和`InterruptDescriptorTable`类型使得异常处理的过程变得相对简单和快乐，如果这对您来说有些魔幻，并且愿意
+ 了解异常处理的所有细节，我们将为您提供帮助: 我们“[使用裸函数处理异常](https://os.phil-opp.com/edition-1/extra/naked-exceptions/)” 
+ 的系列文章将会
