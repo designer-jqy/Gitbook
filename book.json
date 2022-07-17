@@ -1,0 +1,15 @@
+{
+	"title":"My Gitbook",
+	"author":"vc",
+	"plugins":[
+		"edit-link",
+		"back-to-top-button",
+		"chapter-fold"
+	],
+	"pluginsConfig":{
+		"edit-link":{
+			"base":"https://github.com/designer-jqy/Gitbook/edit/feature/development-blog",
+			"label":"edit"
+		}
+	}
+}
