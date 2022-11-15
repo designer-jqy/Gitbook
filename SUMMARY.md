@@ -10,6 +10,7 @@
     * [Go](BackEnd_Development/Go/README.md)
         * [stack&heap](BackEnd_Development/Go/stack&heap.md)
     * [Rust](BackEnd_Development/Rust/README.md)
+        * [method&trait](BackEnd_Development/Rust/method&trait.md)
         * [Rust OS](BackEnd_Development/Rust/Rust_OS.md)
     * [Web Knowlage](BackEnd_Development/Web_Knowlage.md)
 * [CSAPP](CSAPP/README.md)
