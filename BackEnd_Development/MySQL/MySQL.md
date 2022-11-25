@@ -46,3 +46,8 @@ SELECT * FROM INFORMATION_SCHEMA.PROCESSLIST WHERE DB='test';
 SELECT event_name, count_star, sum_timer_wait FROM performance_schema.events_waits_summary_global_by_event_name ORDER BY sum_timer_wait DESC LIMIT 5;
 ```
 
+
+悲观锁、乐观锁、多版本并发控制
+https://juejin.cn/post/6961938483837403150
+
+外键约束: foreign_key_checks
