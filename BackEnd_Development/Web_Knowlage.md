@@ -10,7 +10,7 @@ AJAX = Asynchronous JavaScript and XML
 ## 参考
 1. [XMLHttpRequest](https://developer.mozilla.org/zh-CN/docs/Web/API/XMLHttpRequest)
 # OSI Model
-1. Application: 应用层 Protocols: HTTP、HTTPS、FTP、NFS、TELENT、DHCP、SMTP等
+1. Application: 应用层 Protocols: HTTP、HTTPS、FTP、NFS、TELNET、DHCP、SMTP等
 2. Presentation: 表示层
    1. Translation: 将应用层接收到的数据转换为机器可以识别的二进制形式
    2. Date compression: 压缩数据
