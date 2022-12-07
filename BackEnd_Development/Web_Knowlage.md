@@ -30,6 +30,23 @@ AJAX = Asynchronous JavaScript and XML
 7. Physical: 物理层
 
 Web browser可以执行OSI七层中应用层、表示层、会话层的所有API函数
+
+## TCP
+**三次握手、四次挥手**
+
+A、B两人之间相隔一座大山，相互之间通过喊话进行交流
+
+A: 在么？ \
+B: 在    \
+A: 收到
+
+A需要B拍下手(A距离太远，听不到拍手声)
+
+A: B, 你拍下手好么? \
+B: 好的           \
+B: 我拍完了        \
+A: Nice
+
 # 框架
 RPC(Remote procedure call): 远程过程调用[service/client模型]
 ## gRPC使用场景
