@@ -51,3 +51,18 @@ SELECT event_name, count_star, sum_timer_wait FROM performance_schema.events_wai
 https://juejin.cn/post/6961938483837403150
 
 外键约束: foreign_key_checks
+
+修改表的字符编码
+```sql
+alter table <table_name> default charset=<new_charset>;
+```
+
+在已有表上创建索引
+```sql
+-- 普通索引
+create index <index_name> on <table_name>(`<table_item_name>`);
+-- 唯一索引
+create unique index <index_name> on <table_name>(`<table_item_name>`);
+-- 复合索引
+create index <index_name_long> on <table_name>(`<table_item_name_1>`, `<table_item_name_2>`);
+```
