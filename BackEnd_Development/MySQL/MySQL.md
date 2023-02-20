@@ -66,3 +66,13 @@ create unique index <index_name> on <table_name>(`<table_item_name>`);
 -- 复合索引
 create index <index_name_long> on <table_name>(`<table_item_name_1>`, `<table_item_name_2>`);
 ```
+
+索引下推
+```sql
+select * from table_1 where a > 1 and b = 2;
+```
+
+覆盖索引
+```sql
+select b from table_1 where a > 1;
+```
