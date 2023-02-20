@@ -428,3 +428,36 @@ blog_os::interrupts::test_breakpoint_exception...	[ok]
  `x86-interrupt`调用协议和`InterruptDescriptorTable`类型使得异常处理的过程变得相对简单和快乐，如果这对您来说有些魔幻，并且愿意
  了解异常处理的所有细节，我们将为您提供帮助: 我们“[使用裸函数处理异常](https://os.phil-opp.com/edition-1/extra/naked-exceptions/)” 
  的系列文章将描述在脱离`x86-interrupt`调用协议下和通过自建IDT类型的情况下，如何处理异常。在过去，这部分是`x86-interrupt`调用协议和`x86_64`包存在前的主要的异常处理博客。注意这部分内容基于第一版的博客，部分内容可能已经过时。
+
+ # Double Faults
+
+ 该篇文章将会详细讲述双重错误异常，该异常发生在CPU初次调用异常处理函数失败的情况下。通过该异常我们可以避免触发导致系统重启的三重错误。
+
+ ## What is a Double Fault
+
+ ## Triggering a Double Fault
+
+ ## A Double Fault Handler
+
+ ## Causes of Double Faults
+
+ ## Kernel Stack Overflow
+
+ ## Switching Stacks
+
+ ## The IST and TSS
+
+ ## Creating a TSS
+
+ ## The Global Descriptor Table
+
+ ## A Stack Overflow Test
+
+## The Test IDT
+
+## The Double Fault Handler
+
+## Summary
+
+## What's next
+
