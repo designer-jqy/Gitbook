@@ -50,15 +50,15 @@ fmtOutput()
 
 getPath()
 {
-    if [ ${MODEL} = model_name_1 ]; 
+    if [ ${MODEL} = {model_name_1} ]; 
     then
-      LOGPATH=model_name_1_relative_path
-    elif [ ${MODEL} = model_name_2 ];
+      LOGPATH={model_name_1_relative_path}
+    elif [ ${MODEL} = {model_name_2} ];
     then
-      LOGPATH=model_name_2_relative_path
-    elif [ ${MODEL} = model_name_3 ];
+      LOGPATH={model_name_2_relative_path}
+    elif [ ${MODEL} = {model_name_3} ];
     then
-      LOGPATH=model_name_3_relative_path
+      LOGPATH={model_name_3_relative_path}
     fi
     cd "${PATH}/dev-${LOGPATH}/"
 
@@ -79,9 +79,9 @@ main()
 {
     while [ $# -gt 0 ]; do
        case $1  in
-         model_name_1) MODEL=model_name_1;;
-         model_name_2) MODEL=model_name_2;;
-         model_name_3) MODEL=model_name_3;;
+         {model_name_1}) MODEL={model_name_1};;
+         {model_name_2}) MODEL={model_name_2};;
+         {model_name_3}) MODEL={model_name_3};;
        esac
        shift
     done
