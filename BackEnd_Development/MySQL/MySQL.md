@@ -76,3 +76,17 @@ select * from table_1 where a > 1 and b = 2;
 ```sql
 select b from table_1 where a > 1;
 ```
+
+UTF8编码中一个汉字（包括数字）占用3个字节
+
+GBK编码中一个汉字（包括数字）占用2个字节
+
+4.0版本以下，varchar(100)，指的是100字节，如果存放UTF8汉字时，只能存33个（每个汉字3字节）
+
+5.0版本以上，varchar(100)，指的是100字符，无论存放的是数字、字母还是UTF8汉字（每个汉字3字节），都可以存放100个。最大大小是 65532字节
+
+varchar括号里面的数字表示的是字符还是字节:
+
+[MySQL VARCHAR Lengths and UTF-8](https://stackoverflow.com/questions/1997540/mysql-varchar-lengths-and-utf-8)
+
+[Mysql: String Type Overview](https://web.archive.org/web/20160425203826/https://dev.mysql.com/doc/refman/5.0/en/string-type-overview.html)
