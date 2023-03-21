@@ -21,19 +21,22 @@ concurrency:
   group: "pages"
   cancel-in-progress: false
 
-jobs:      
+jobs:
   # Build job
   build:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v3
-      - name: Upgrade gitbook-cli
-        run: npm install -g gitbook-cli@latest
+
+      # Install Gitbook
+      - name: Install Gitbook
+        run: npm install gitbook-cli@2.1.2 -g
+
+      # Build Gitbook
       - name: Build Gitbook
-        run: |
-          gitbook install
-          gitbook build
+        run: gitbook build
+
       - name: Setup Pages
         uses: actions/configure-pages@v3
       - name: Build with Jekyll
