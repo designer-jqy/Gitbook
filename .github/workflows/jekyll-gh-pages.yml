@@ -31,7 +31,7 @@ jobs:
 
       # Install Gitbook
       - name: Install Gitbook
-        run: npm install -g gitbook-cli
+        run: npm install gitbook-cli@2.1.2 -g
 
       # Build Gitbook
       - name: Build Gitbook
