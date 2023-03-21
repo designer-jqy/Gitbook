@@ -30,7 +30,8 @@ jobs:
         uses: actions/checkout@v3
       - name: Install Gitbook
         run: |
-          npm cache clean --force
+          npm install -g npm
+          npm cache clean
           npm install -g gitbook-cli 
       - name: Build Gitbook
         run: |
