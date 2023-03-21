@@ -19,7 +19,7 @@ permissions:
 # However, do NOT cancel in-progress runs as we want to allow these production deployments to complete.
 concurrency:
   group: "pages"
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 jobs:      
   # Build job
@@ -29,9 +29,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
       - name: Install Gitbook
-        run: |
-          npm uninstall -g gitbook-cli
-          npm install -g gitbook-cli 
+        run: npm install -g gitbook-cli@2.3.2 
       - name: Build Gitbook
         run: |
           gitbook install
