@@ -29,7 +29,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
       - name: Install Gitbook
-        run: npm install gitbook-cli -g
+        run: npm install -g gitbook-cli 
       - name: Build Gitbook
         run: |
           gitbook install
