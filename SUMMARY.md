@@ -8,6 +8,7 @@
     * [MySQL](BackEnd_Development/MySQL/README.md)
         * [BaseKnowledge](BackEnd_Development/MySQL/MySQL.md)
     * [Go](BackEnd_Development/Go/README.md)
+        * [slices](BackEnd_Development/Go/slices.md)
         * [stack&heap](BackEnd_Development/Go/stack&heap.md)
     * [Rust](BackEnd_Development/Rust/README.md)
         * [method&trait](BackEnd_Development/Rust/method&trait.md)
